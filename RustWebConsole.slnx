@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Docs/">
+    <File Path="EXISTING_RCON_LIBRARY.md" />
+    <File Path="LICENSE" />
+    <File Path="PLAN.md" />
+  </Folder>
+  <Folder Name="/Rcon/">
+    <Project Path="Source/RustRcon/RustRcon.csproj" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="Source/RustWebConsole.Web/RustWebConsole.Web.csproj" />
+  </Folder>
+</Solution>
