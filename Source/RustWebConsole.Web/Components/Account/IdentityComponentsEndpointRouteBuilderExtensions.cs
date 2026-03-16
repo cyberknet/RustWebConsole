@@ -8,6 +8,7 @@ using Microsoft.Extensions.Primitives;
 using RustWebConsole.Web.Components.Account.Pages;
 using RustWebConsole.Web.Components.Account.Pages.Manage;
 using RustWebConsole.Web.Data;
+using RustWebConsole.Web.Data.Entities;
 using System.Security.Claims;
 using System.Text.Json;
 

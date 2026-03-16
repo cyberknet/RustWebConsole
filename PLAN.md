@@ -83,7 +83,7 @@ Key:
 - **Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore** - Database health checks
 
 ### 3. Core Domain Models (Code-First Entities)
-- 3.1 [ ] Create User entity with Identity integration and related DTOs
+- [C] 3.1 Create User entity with Identity integration and related DTOs
 - 3.2 [ ] Create Server entity with encrypted credentials and related DTOs
 - 3.3 [ ] Create UserServer relationship entity (which users can access which servers)
 - 3.4 [ ] Create Player entity and related DTOs
