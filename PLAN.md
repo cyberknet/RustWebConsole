@@ -73,8 +73,8 @@ Key:
 - [C] 2.2 Create DbContext with all DbSet properties
 - [C] 2.3 Configure entity relationships using DataAnnotations, never Fluent API
 - [D] 2.4 Add indexes for frequently queried fields
-- [ ] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
-- [ ] 2.6 Add database seeding for initial data (admin user, sample server)
+- [C] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
+- [C] 2.6 Add database seeding for initial data (admin user, sample server)
 - [ ] 2.7 Add database health check using **Microsoft.Extensions.Diagnostics.HealthChecks** (built-in)
 
 **Libraries to use:**
