@@ -110,7 +110,7 @@ Key:
 
 ### 4. Identity and Authentication System
 **USE EXISTING LIBRARIES**: ASP.NET Core Identity + JWT
-- 4.1 [ ] Install **Microsoft.AspNetCore.Identity.EntityFrameworkCore** (NuGet)
+- 4.1 [C] Install **Microsoft.AspNetCore.Identity.EntityFrameworkCore** (NuGet)
 - 4.2 [ ] Configure ASP.NET Core Identity with EF Core
 - 4.3 [ ] Install **Microsoft.AspNetCore.Authentication.JwtBearer** for API auth
 - 4.4 [ ] Create user registration endpoint
