@@ -27,6 +27,7 @@ A multi-tenant, web-based remote console (WebRCON) system for Rust game servers 
 Key:
 [C] = Complete
 [I] = In Progress
+[D] = Deferred Until Later
 [ ] = Not Started
 
 ## Phase 1: Foundation & Infrastructure
@@ -70,8 +71,8 @@ Key:
   - RconResponse entity (responses from RCON commands)
   - UserAction entity (audit log of user actions in the system)
 - [C] 2.2 Create DbContext with all DbSet properties
-- [ ] 2.3 Configure entity relationships using DataAnnotations on the entity, never Fluent API
-- [ ] 2.4 Add indexes for frequently queried fields
+- [C] 2.3 Configure entity relationships using DataAnnotations, never Fluent API
+- [D] 2.4 Add indexes for frequently queried fields
 - [ ] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
 - [ ] 2.6 Add database seeding for initial data (admin user, sample server)
 - [ ] 2.7 Add database health check using **Microsoft.Extensions.Diagnostics.HealthChecks** (built-in)
