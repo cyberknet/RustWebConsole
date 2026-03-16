@@ -1,5 +1,8 @@
+using AutoMapper.Execution;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using RustWebConsole.Web.Attributes;
 using RustWebConsole.Web.Data.Entities;
 using RustWebConsole.Web.Data.Services;
 
@@ -29,10 +32,29 @@ namespace RustWebConsole.Web.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Server>().Property(s => s.Password)
-                .HasConversion(
+            var encryptedConverter = new ValueConverter<string, string>(
                     v => _encryptionService.Encrypt(v), // Encrypt on save
-                    v => _encryptionService.Decrypt(v)); // Decrypt on load
+                    v => _encryptionService.Decrypt(v)  // Decrypt on load
+                );
+
+            // loop through all entities
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                ProcessEncryptedFieldAttribute(modelBuilder, entityType, encryptedConverter);
+            }
+        }
+
+        private static void ProcessEncryptedFieldAttribute(ModelBuilder modelBuilder, Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType entityType, ValueConverter<string, string> encryptedConverter)
+        {
+            foreach (var property in entityType.ClrType.GetProperties())
+            {
+                if (Attribute.GetCustomAttribute(property, typeof(EncryptedFieldAttribute)) is EncryptedFieldAttribute)
+                {
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property(property.Name)
+                        .HasConversion(encryptedConverter);
+                }
+            }
         }
 
         public DbSet<Server> Servers { get; set; } = null!;

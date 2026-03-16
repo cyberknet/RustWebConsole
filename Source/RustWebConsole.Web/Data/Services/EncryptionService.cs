@@ -20,8 +20,11 @@ namespace RustWebConsole.Web.Data.Services
             _encryptionKey = configuration["EncryptionKey"] ?? throw new InvalidOperationException("Encryption key not found in configuration.");
         }
 
-        public string Encrypt(string plainText)
+        public string Encrypt(string? plainText)
         {
+            if (plainText == null)
+                return null!;
+
             using var aes = Aes.Create();
             var key = Encoding.UTF8.GetBytes(_encryptionKey.PadRight(32).Substring(0, 32));
             aes.Key = key;
@@ -34,8 +37,11 @@ namespace RustWebConsole.Web.Data.Services
             return Convert.ToBase64String(aes.IV) + ":" + Convert.ToBase64String(cipherTextBytes);
         }
 
-        public string Decrypt(string cipherText)
+        public string? Decrypt(string? cipherText)
         {
+            if (cipherText == null)
+                return null;
+
             var parts = cipherText.Split(':');
             if (parts.Length != 2) throw new FormatException("Invalid cipher text format.");
 

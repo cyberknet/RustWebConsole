@@ -85,7 +85,7 @@ Key:
 ### 3. Core Domain Models (Code-First Entities)
 - [C] 3.1 Create User entity with Identity integration and related DTOs
 - [C] 3.2 Create Server entity with encrypted credentials and related DTOs
-- 3.3 [ ] Create UserServer relationship entity (which users can access which servers)
+- [C] 3.3 Create UserServer relationship entity (which users can access which servers)
 - 3.4 [ ] Create Player entity and related DTOs
 - 3.5 [ ] Create ConsoleMessage entity and related DTOs
 - 3.6 [ ] Create ServerStatistics entity and related DTOs
