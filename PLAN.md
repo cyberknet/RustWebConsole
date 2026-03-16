@@ -27,6 +27,7 @@ A multi-tenant, web-based remote console (WebRCON) system for Rust game servers 
 Key:
 [C] = Complete
 [I] = In Progress
+[D] = Deferred Until Later
 [ ] = Not Started
 
 ## Phase 1: Foundation & Infrastructure
@@ -70,11 +71,11 @@ Key:
   - RconResponse entity (responses from RCON commands)
   - UserAction entity (audit log of user actions in the system)
 - [C] 2.2 Create DbContext with all DbSet properties
-- [ ] 2.3 Configure entity relationships using DataAnnotations on the entity, never Fluent API
-- [ ] 2.4 Add indexes for frequently queried fields
-- [ ] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
-- [ ] 2.6 Add database seeding for initial data (admin user, sample server)
-- [ ] 2.7 Add database health check using **Microsoft.Extensions.Diagnostics.HealthChecks** (built-in)
+- [C] 2.3 Configure entity relationships using DataAnnotations, never Fluent API
+- [D] 2.4 Add indexes for frequently queried fields
+- [C] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
+- [C] 2.6 Add database seeding for initial data (admin user, sample server)
+- [C] 2.7 Add database health check using **Microsoft.Extensions.Diagnostics.HealthChecks** (built-in)
 
 **Libraries to use:**
 - **Npgsql.EntityFrameworkCore.PostgreSQL** - PostgreSQL provider
@@ -82,7 +83,7 @@ Key:
 - **Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore** - Database health checks
 
 ### 3. Core Domain Models (Code-First Entities)
-- 3.1 [ ] Create User entity with Identity integration and related DTOs
+- [C] 3.1 Create User entity with Identity integration and related DTOs
 - 3.2 [ ] Create Server entity with encrypted credentials and related DTOs
 - 3.3 [ ] Create UserServer relationship entity (which users can access which servers)
 - 3.4 [ ] Create Player entity and related DTOs

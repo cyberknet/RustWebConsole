@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using RustWebConsole.Web.Data;
+using RustWebConsole.Web.Data.Entities;
 
 namespace RustWebConsole.Web.Components.Account
 {

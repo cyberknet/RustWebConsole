@@ -8,5 +8,7 @@ namespace RustWebConsole.Web.Data.Entities
         public int Kills { get; set; }
         public int Deaths { get; set; }
         public TimeSpan PlayTime { get; set; }
+
+        // No additional relationships needed
     }
 }
