@@ -69,8 +69,8 @@ Key:
   - RconRequest entity (audit trail of all RCON commands sent)
   - RconResponse entity (responses from RCON commands)
   - UserAction entity (audit log of user actions in the system)
-- [ ] 2.2 Create DbContext with all DbSet properties
-- [ ] 2.3 Configure entity relationships using Fluent API
+- [C] 2.2 Create DbContext with all DbSet properties
+- [ ] 2.3 Configure entity relationships using DataAnnotations on the entity, never Fluent API
 - [ ] 2.4 Add indexes for frequently queried fields
 - [ ] 2.5 Implement automatic migration runner on application startup using **EF Core Migrations**
 - [ ] 2.6 Add database seeding for initial data (admin user, sample server)
