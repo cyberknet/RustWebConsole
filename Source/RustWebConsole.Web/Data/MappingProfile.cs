@@ -11,6 +11,7 @@ namespace RustWebConsole.Web.Data
             CreateMap<Server, ServerDto>().ReverseMap();
             CreateMap<Player, PlayerDto>().ReverseMap();
             CreateMap<ConsoleMessage, ConsoleMessageDto>().ReverseMap();
+            CreateMap<ServerStatistics, ServerStatisticsDto>().ReverseMap();
         }
     }
 }
