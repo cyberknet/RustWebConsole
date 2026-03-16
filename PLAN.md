@@ -87,7 +87,7 @@ Key:
 - [C] 3.2 Create Server entity with encrypted credentials and related DTOs
 - [C] 3.3 Create UserServer relationship entity (which users can access which servers)
 - [C] 3.4 Create Player entity and related DTOs
-- 3.5 [ ] Create ConsoleMessage entity and related DTOs
+- [C] 3.5 Create ConsoleMessage entity and related DTOs
 - 3.6 [ ] Create ServerStatistics entity and related DTOs
 - 3.7 [ ] Create PlayerInventory models
 - 3.8 [ ] Create RconRequest entity (timestamp, user, server, command, status)
