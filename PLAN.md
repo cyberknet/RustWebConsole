@@ -92,7 +92,7 @@ Key:
 - [C] 3.7 Create PlayerInventory models
 - [C] 3.8 Create RconRequest entity (timestamp, user, server, command, status)
 - [C] 3.9 Create RconResponse entity (request reference, response data, timestamp, status)
-- 3.10 [ ] Create UserAction entity (user, action type, target, timestamp, details)
+- [C] 3.10 Create UserAction entity (user, action type, target, timestamp, details)
 - [C] 3.11 Create shared enums (ServerStatus, PlayerStatus, PermissionLevel, ActionType, etc.)
 - 3.12 [ ] Add data annotations for validation (built-in System.ComponentModel.DataAnnotations)
 
