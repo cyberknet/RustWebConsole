@@ -9,6 +9,7 @@ namespace RustWebConsole.Web.Data
         public MappingProfile()
         {
             CreateMap<Server, ServerDto>().ReverseMap();
+            CreateMap<Player, PlayerDto>().ReverseMap();
         }
     }
 }
