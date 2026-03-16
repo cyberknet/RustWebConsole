@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using RustWebConsole.Web.Data.Entities;
+using RustWebConsole.Web.Data.Services;
 
 namespace RustWebConsole.Web.Data
 {
@@ -27,11 +28,14 @@ namespace RustWebConsole.Web.Data
             // Seed sample server
             if (!dbContext.Servers.Any())
             {
+                var encryptionService = scope.ServiceProvider.GetRequiredService<IEncryptionService>();
+
                 dbContext.Servers.Add(new Server
                 {
                     Name = "Sample Server",
-                    ConnectionDetails = "127.0.0.1:28015",
-                    EncryptedCredentials = "sample-encrypted-credentials"
+                    Hostname = "127.0.0.1",
+                    Port = 28015,
+                    Password = encryptionService.Encrypt("sample-password")
                 });
 
                 await dbContext.SaveChangesAsync();
