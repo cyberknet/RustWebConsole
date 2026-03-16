@@ -6,6 +6,7 @@ using RustWebConsole.Web.Components.Account;
 using RustWebConsole.Web.Data;
 using RustWebConsole.Web.Data.Entities;
 using Serilog;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// Add health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>("Database");
+
 
 
 var app = builder.Build();
@@ -87,5 +92,8 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+// Map health check endpoint
+app.MapHealthChecks("/health");
 
 app.Run();
