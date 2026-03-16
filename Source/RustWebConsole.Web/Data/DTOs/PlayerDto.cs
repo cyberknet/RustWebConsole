@@ -1,3 +1,5 @@
+using RustWebConsole.Web.Data.Enums;
+
 namespace RustWebConsole.Web.Data.DTOs
 {
     public class PlayerDto
@@ -9,5 +11,6 @@ namespace RustWebConsole.Web.Data.DTOs
         public string? LastIpAddress { get; set; }
         public DateTime LastConnectedOn { get; set; }
         public TimeSpan ConnectionDuration { get; set; } = TimeSpan.Zero;
+        public PlayerStatus Status { get; set; }
     }
 }

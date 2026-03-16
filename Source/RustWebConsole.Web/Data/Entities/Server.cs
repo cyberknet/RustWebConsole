@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RustWebConsole.Web.Attributes;
 using RustWebConsole.Web.Data.Services;
+using RustWebConsole.Web.Data.Enums;
 
 namespace RustWebConsole.Web.Data.Entities
 {
@@ -24,6 +25,8 @@ namespace RustWebConsole.Web.Data.Entities
         [Required]
         [EncryptedField]
         public string Password { get; set; } = string.Empty;
+
+        public ServerStatus Status { get; set; }
 
 
         // Relationships

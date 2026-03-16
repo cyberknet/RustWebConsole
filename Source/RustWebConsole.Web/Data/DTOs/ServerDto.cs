@@ -1,3 +1,5 @@
+using RustWebConsole.Web.Data.Enums;
+
 namespace RustWebConsole.Web.Data.DTOs
 {
     public class ServerDto
@@ -6,5 +8,6 @@ namespace RustWebConsole.Web.Data.DTOs
         public string Name { get; set; } = string.Empty;
         public string Hostname { get; set; } = string.Empty;
         public int Port { get; set; }
+        public ServerStatus Status { get; set; }
     }
 }

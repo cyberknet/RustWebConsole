@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using RustWebConsole.Web.Data.Enums;
 
 namespace RustWebConsole.Web.Data.Entities
 {
@@ -36,5 +37,7 @@ namespace RustWebConsole.Web.Data.Entities
         public ICollection<PlayerStatistics> PlayerStatistics { get; set; } = new List<PlayerStatistics>();
 
         public ICollection<PlayerInventory> PlayerInventories { get; set; } = new List<PlayerInventory>();
+
+        public PlayerStatus Status { get; set; }
     }
 }
