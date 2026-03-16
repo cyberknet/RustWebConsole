@@ -20,10 +20,21 @@ namespace RustWebConsole.Web.Data.Entities
         [Required]
         public int ServerId { get; set; }
 
+        [MaxLength(50)]
+        public string? LastIpAddress { get; set; }
+
+        [Required]
+        public DateTime LastConnectedOn { get; set; }
+
+        [Required]
+        public TimeSpan ConnectionDuration { get; set; } = TimeSpan.Zero;
+
         [ForeignKey(nameof(ServerId))]
         public Server Server { get; set; } = null!;
 
         // Relationships
         public ICollection<PlayerStatistics> PlayerStatistics { get; set; } = new List<PlayerStatistics>();
+
+        public ICollection<PlayerInventory> PlayerInventories { get; set; } = new List<PlayerInventory>();
     }
 }

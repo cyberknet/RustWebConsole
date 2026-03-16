@@ -89,7 +89,7 @@ Key:
 - [C] 3.4 Create Player entity and related DTOs
 - [C] 3.5 Create ConsoleMessage entity and related DTOs
 - [C] 3.6 Create ServerStatistics entity and related DTOs
-- 3.7 [ ] Create PlayerInventory models
+- [C] 3.7 Create PlayerInventory models
 - 3.8 [ ] Create RconRequest entity (timestamp, user, server, command, status)
 - 3.9 [ ] Create RconResponse entity (request reference, response data, timestamp, status)
 - 3.10 [ ] Create UserAction entity (user, action type, target, timestamp, details)

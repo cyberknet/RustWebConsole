@@ -66,5 +66,6 @@ namespace RustWebConsole.Web.Data
         public DbSet<RconRequest> RconRequests { get; set; } = null!;
         public DbSet<RconResponse> RconResponses { get; set; } = null!;
         public DbSet<UserAction> UserActions { get; set; } = null!;
+        public DbSet<PlayerInventory> PlayerInventories { get; set; } = null!;
     }
 }
