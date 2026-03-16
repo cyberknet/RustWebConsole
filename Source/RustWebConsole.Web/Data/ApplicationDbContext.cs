@@ -1,13 +1,38 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RustWebConsole.Web.Data.Entities;
+using RustWebConsole.Web.Data.Services;
 
 namespace RustWebConsole.Web.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly IEncryptionService _encryptionService;
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEncryptionService encryptionService)
+            : base(options)
         {
+            _encryptionService = encryptionService;
+        }
+
+        public override int SaveChanges()
+        {
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Server>().Property(s => s.Password)
+                .HasConversion(
+                    v => _encryptionService.Encrypt(v), // Encrypt on save
+                    v => _encryptionService.Decrypt(v)); // Decrypt on load
         }
 
         public DbSet<Server> Servers { get; set; } = null!;

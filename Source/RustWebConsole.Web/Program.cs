@@ -5,6 +5,7 @@ using RustWebConsole.Web.Components;
 using RustWebConsole.Web.Components.Account;
 using RustWebConsole.Web.Data;
 using RustWebConsole.Web.Data.Entities;
+using RustWebConsole.Web.Data.Services;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -48,6 +49,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+// Register the EncryptionService
+builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()
