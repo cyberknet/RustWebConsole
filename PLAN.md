@@ -116,8 +116,9 @@ Key:
 - 4.4 [C] Create user registration endpoint
 - 4.5 [C] Create user login endpoint with JWT generation
 - 4.6 [C] Implement refresh token mechanism
-- 4.7 [ ] Add password reset functionality using Identity
+- 4.7 [C] Add password reset functionality using Identity
 - 4.8 [ ] Configure password policies (Identity built-in)
+- 4.9 [ ] Ensure existing ASP.NET Core Identity pages utilize the new endpoints
 
 **Libraries to use:**
 - **ASP.NET Core Identity** - Complete user management system
@@ -609,7 +610,6 @@ This is much more achievable for a personal project!
 - **SignalR** - Real-time communication (built into Blazor Server)
 - **IMemoryCache** - In-memory caching
 - **BackgroundService** - Background workers
-- **PeriodicTimer** - Scheduled tasks (.NET 6+)
 - **Data Protection API** - Credential encryption
 - **Health Checks** - Service health monitoring
 - **JWT Bearer Auth** - API authentication
