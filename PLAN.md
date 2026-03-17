@@ -113,7 +113,7 @@ Key:
 - 4.1 [C] Install **Microsoft.AspNetCore.Identity.EntityFrameworkCore** (NuGet)
 - 4.2 [C] Configure ASP.NET Core Identity with EF Core
 - 4.3 [C] Install **Microsoft.AspNetCore.Authentication.JwtBearer** for API auth
-- 4.4 [ ] Create user registration endpoint
+- 4.4 [C] Create user registration endpoint
 - 4.5 [ ] Create user login endpoint with JWT generation
 - 4.6 [ ] Implement refresh token mechanism
 - 4.7 [ ] Add password reset functionality using Identity
