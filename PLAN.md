@@ -117,7 +117,7 @@ Key:
 - 4.5 [C] Create user login endpoint with JWT generation
 - 4.6 [C] Implement refresh token mechanism
 - 4.7 [C] Add password reset functionality using Identity
-- 4.8 [ ] Configure password policies (Identity built-in)
+- 4.8 [C] Configure password policies (Identity built-in)
 - 4.9 [ ] Ensure existing ASP.NET Core Identity pages utilize the new endpoints
 
 **Libraries to use:**
