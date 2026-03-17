@@ -115,7 +115,7 @@ Key:
 - 4.3 [C] Install **Microsoft.AspNetCore.Authentication.JwtBearer** for API auth
 - 4.4 [C] Create user registration endpoint
 - 4.5 [C] Create user login endpoint with JWT generation
-- 4.6 [ ] Implement refresh token mechanism
+- 4.6 [C] Implement refresh token mechanism
 - 4.7 [ ] Add password reset functionality using Identity
 - 4.8 [ ] Configure password policies (Identity built-in)
 

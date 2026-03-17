@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace RustWebConsole.Web.Controllers
 {
@@ -18,6 +19,7 @@ namespace RustWebConsole.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private static readonly Dictionary<string, string> RefreshTokens = new(); // In-memory storage for simplicity
 
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
@@ -69,7 +71,50 @@ namespace RustWebConsole.Web.Controllers
             }
 
             var token = GenerateJwtToken(user);
-            return Ok(new { Token = token });
+            var refreshToken = GenerateRefreshToken();
+
+            RefreshTokens[token] = refreshToken; // Store the refresh token
+
+            return Ok(new { Token = token, RefreshToken = refreshToken });
+        }
+
+        [HttpPost("refresh-token")]
+        public IActionResult RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            if (!RefreshTokens.TryGetValue(request.Token, out var storedRefreshToken) || storedRefreshToken != request.RefreshToken)
+            {
+                return Unauthorized(new { Message = "Invalid refresh token" });
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(request.Token);
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "Invalid token" });
+            }
+
+            var user = _userManager.FindByIdAsync(userId).Result;
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "User not found" });
+            }
+
+            var newToken = GenerateJwtToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            RefreshTokens[newToken] = newRefreshToken;
+
+            return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         private string GenerateJwtToken(ApplicationUser user)
