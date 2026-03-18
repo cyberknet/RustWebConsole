@@ -118,7 +118,7 @@ Key:
 - 4.6 [C] Implement refresh token mechanism
 - 4.7 [C] Add password reset functionality using Identity
 - 4.8 [C] Configure password policies (Identity built-in)
-- 4.9 [ ] Ensure existing ASP.NET Core Identity pages utilize the new endpoints
+- 4.9 [C] Ensure existing ASP.NET Core Identity pages utilize the new endpoints
 
 **Libraries to use:**
 - **ASP.NET Core Identity** - Complete user management system
