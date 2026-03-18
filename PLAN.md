@@ -110,14 +110,15 @@ Key:
 
 ### 4. Identity and Authentication System
 **USE EXISTING LIBRARIES**: ASP.NET Core Identity + JWT
-- 4.1 [ ] Install **Microsoft.AspNetCore.Identity.EntityFrameworkCore** (NuGet)
-- 4.2 [ ] Configure ASP.NET Core Identity with EF Core
-- 4.3 [ ] Install **Microsoft.AspNetCore.Authentication.JwtBearer** for API auth
-- 4.4 [ ] Create user registration endpoint
-- 4.5 [ ] Create user login endpoint with JWT generation
-- 4.6 [ ] Implement refresh token mechanism
-- 4.7 [ ] Add password reset functionality using Identity
-- 4.8 [ ] Configure password policies (Identity built-in)
+- 4.1 [C] Install **Microsoft.AspNetCore.Identity.EntityFrameworkCore** (NuGet)
+- 4.2 [C] Configure ASP.NET Core Identity with EF Core
+- 4.3 [C] Install **Microsoft.AspNetCore.Authentication.JwtBearer** for API auth
+- 4.4 [C] Create user registration endpoint
+- 4.5 [C] Create user login endpoint with JWT generation
+- 4.6 [C] Implement refresh token mechanism
+- 4.7 [C] Add password reset functionality using Identity
+- 4.8 [C] Configure password policies (Identity built-in)
+- 4.9 [C] Ensure existing ASP.NET Core Identity pages utilize the new endpoints
 
 **Libraries to use:**
 - **ASP.NET Core Identity** - Complete user management system
@@ -609,7 +610,6 @@ This is much more achievable for a personal project!
 - **SignalR** - Real-time communication (built into Blazor Server)
 - **IMemoryCache** - In-memory caching
 - **BackgroundService** - Background workers
-- **PeriodicTimer** - Scheduled tasks (.NET 6+)
 - **Data Protection API** - Credential encryption
 - **Health Checks** - Service health monitoring
 - **JWT Bearer Auth** - API authentication

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,18 @@ using RustWebConsole.Web.Data.Entities;
 using RustWebConsole.Web.Data.Services;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using RustWebConsole.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
+    kvp => kvp.Key,
+    kvp => Environment.GetEnvironmentVariable(kvp.Value))
+    .Where(x => x.Value != null)
+    .ToDictionary(x => x.Key, x => x.Value);
+
+builder.Configuration.AddInMemoryCollection(overrides);
 
 // Configure Serilog for logging
 Log.Logger = new LoggerConfiguration()
@@ -27,6 +38,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -34,19 +46,78 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Add a strongly-typed configuration object for AppSettings
+var appSettings = new AppSettings();
+builder.Configuration.Bind(settings);
+
+// Register the AppSettings object as a singleton
+builder.Services.AddSingleton(appSettings);
+
+var connectionString = appSettings.ConnectionStrings.DefaultConnection ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
+T GetConfigValue<T>(IConfiguration configuration, PasswordOptions? passwordOptions, string propertyName, string envVar, T defaultValue) where T : struct
+{
+    var envValue = Environment.GetEnvironmentVariable(envVar);
+    if (!string.IsNullOrEmpty(envValue))
     {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+        if (typeof(T) == typeof(bool) && bool.TryParse(envValue, out var boolResult))
+            return (T)(object)boolResult;
+
+        if (typeof(T) == typeof(int) && int.TryParse(envValue, out var intResult))
+            return (T)(object)intResult;
+    }
+    // no environment variable, try to get from JSON configuration
+    else if (passwordOptions != null)
+    {
+        // use reflection to load the property value from the passwordOptions object
+        var propertyInfo = typeof(PasswordOptions).GetProperty(propertyName);
+        if (propertyInfo != null)
+        {
+            var jsonValue = propertyInfo.GetValue(passwordOptions);
+            if (jsonValue != null && jsonValue is T value)
+                return value;
+        }
+    }
+    
+    return defaultValue;
+}
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+
+    // Configure password policies using the helper function
+    options.Password.RequireDigit = appSettings.Identity.RequireDigit;
+    options.Password.RequiredLength = appSettings.Identity.RequiredLength;
+    options.Password.RequireNonAlphanumeric = appSettings.Identity.RequireNonAlphanumeric;
+    options.Password.RequireUppercase = appSettings.Identity.RequireUppercase;
+    options.Password.RequireLowercase = appSettings.Identity.RequireLowercase;
+});
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = appSettings.Jwt.ValidIssuer,
+        ValidAudience = appSettings.Jwt.ValidAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Jwt.IssuerSigningKey))
+    };
+    options.Authority = appSettings.Jwt.ValidIssuer;
+    options.RequireHttpsMetadata = true;
+});
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
