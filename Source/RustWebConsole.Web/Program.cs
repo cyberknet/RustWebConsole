@@ -125,9 +125,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
     options.AddPolicy("ServerAccess", policy =>
         policy.Requirements.Add(new ServerAccessRequirement()));
+    options.AddPolicy("ServerLevelAccess", policy =>
+        policy.Requirements.Add(new ServerLevelAccessRequirement()));
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, ServerAccessHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, ServerLevelAccessHandler>();
 
 // Add Identity services with appSettings configuration
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
