@@ -12,6 +12,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RustWebConsole.Web;
+using RustWebConsole.Web.Services.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using RustWebConsole.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
@@ -48,7 +51,7 @@ builder.Services.AddAuthentication(options =>
 
 // Add a strongly-typed configuration object for AppSettings
 var appSettings = new AppSettings();
-builder.Configuration.Bind(settings);
+builder.Configuration.Bind(appSettings);
 
 // Register the AppSettings object as a singleton
 builder.Services.AddSingleton(appSettings);
@@ -86,19 +89,6 @@ T GetConfigValue<T>(IConfiguration configuration, PasswordOptions? passwordOptio
     return defaultValue;
 }
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = true;
-    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-
-    // Configure password policies using the helper function
-    options.Password.RequireDigit = appSettings.Identity.RequireDigit;
-    options.Password.RequiredLength = appSettings.Identity.RequiredLength;
-    options.Password.RequireNonAlphanumeric = appSettings.Identity.RequireNonAlphanumeric;
-    options.Password.RequireUppercase = appSettings.Identity.RequireUppercase;
-    options.Password.RequireLowercase = appSettings.Identity.RequireLowercase;
-});
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -128,9 +118,39 @@ builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>("Database");
 
+// Add role-based authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
+    options.AddPolicy("ServerAccess", policy =>
+        policy.Requirements.Add(new ServerAccessRequirement()));
+    options.AddPolicy("ServerLevelAccess", policy =>
+        policy.Requirements.Add(new ServerLevelAccessRequirement()));
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, ServerAccessHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, ServerLevelAccessHandler>();
+
+// Add Identity services with appSettings configuration
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = appSettings.Identity.PasswordRequireDigit;
+    options.Password.RequiredLength = appSettings.Identity.PasswordRequiredLength;
+    options.Password.RequireNonAlphanumeric = appSettings.Identity.PasswordRequireNonAlphanumeric;
+    options.Password.RequireUppercase = appSettings.Identity.PasswordRequireUppercase;
+    options.Password.RequireLowercase = appSettings.Identity.PasswordRequireLowercase;
+    options.SignIn.RequireConfirmedAccount = appSettings.Identity.RequireConfirmedAccount;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 
 var app = builder.Build();
+
+// Add middleware for permission checking
+app.UseMiddleware<PermissionCheckingMiddleware>();
 
 // Apply EF Core migrations automatically on startup
 using (var scope = app.Services.CreateScope())
