@@ -10,10 +10,21 @@ namespace RustWebConsole.Web.Data
         {
             using var scope = serviceProvider.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             // Ensure database is created
             await dbContext.Database.EnsureCreatedAsync();
+
+            // Seed roles
+            var roles = new[] { "Admin", "User", "Viewer" };
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
 
             // Seed admin user
             const string adminEmail = "admin@example.com";
@@ -23,6 +34,7 @@ namespace RustWebConsole.Web.Data
             {
                 var adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
                 await userManager.CreateAsync(adminUser, adminPassword);
+                await userManager.AddToRoleAsync(adminUser, "Admin");
             }
 
             // Seed sample server

@@ -5,17 +5,19 @@ namespace RustWebConsole.Web;
 
 public class AppSettings
 {
+    // maps the property names in our AppSettings class to their corresponding environment variable names
     public static Dictionary<string, string> EnvironmentMap { get; set; } = new()
     {
-        {"Identity:RequireDigit",               "RWC_IDENTITY_REQUIREDIGIT" },
-        {"Identity:RequiredLength",             "RWC_IDENTITY_REQUIREDLENGTH"  },
-        {"Identity:RequireNonAlphanumeric",     "RWC_IDENTITY_REQUIRENONALPHANUMERIC" },
-        {"Identity:RequireUppercase",           "RWC_IDENTITY_REQUIREUPPERCASE" },
-        {"Identity:RequireLowercase",           "RWC_IDENTITY_REQUIRELOWERCASE" },
+        {"Identity:PasswordRequireDigit",               "RWC_IDENTITY_PASSWORDREQUIREDIGIT" },
+        {"Identity:PasswordRequiredLength",             "RWC_IDENTITY_PASSWORDREQUIREDLENGTH"  },
+        {"Identity:PasswordRequireNonAlphanumeric",     "RWC_IDENTITY_PASSWORDREQUIRENONALPHANUMERIC" },
+        {"Identity:PasswordRequireUppercase",           "RWC_IDENTITY_PASSWORDREQUIREUPPERCASE" },
+        {"Identity:PasswordRequireLowercase",           "RWC_IDENTITY_PASSWORDREQUIRELOWERCASE" },
+        {"Identity:RequireConfirmedAccount",    "RWC_IDENTITY_REQUIRECONFIRMEDACCOUNT" },
 
-        {"Jwt:ValidIssuer",                     "RWC_JWT_VALID_ISSUER" },
-        {"Jwt:ValidAudience",                   "RWC_JWT_VALID_AUDIENCE" },
-        {"Jwt:IssuerSigningKey",                "RWC_JWT_KEY" },
+        {"Jwt:ValidIssuer",                     "RWC_JWT_VALIDISSUER" },
+        {"Jwt:ValidAudience",                   "RWC_JWT_VALIDAUDIENCE" },
+        {"Jwt:IssuerSigningKey",                "RWC_JWT_ISSUERSIGNINGKEY" },
 
         {"ConnectionStrings:DefaultConnection", "RWC_CONNECTIONS_DEFAULT" }
     };
@@ -33,11 +35,12 @@ public class AppSettings
 
 public class Identity
 {
-    public bool RequireDigit { get; set; } = true;
-    public int RequiredLength { get; set; } = 6;
-    public bool RequireNonAlphanumeric { get; set; } = true;
-    public bool RequireUppercase { get; set; } = true;
-    public bool RequireLowercase { get; set; } = true;
+    public bool PasswordRequireDigit { get; set; } = true;
+    public int PasswordRequiredLength { get; set; } = 6;
+    public bool PasswordRequireNonAlphanumeric { get; set; } = true;
+    public bool PasswordRequireUppercase { get; set; } = true;
+    public bool PasswordRequireLowercase { get; set; } = true;
+    public bool RequireConfirmedAccount { get; set; } = true;
 }
 
 public class JwtSettings
