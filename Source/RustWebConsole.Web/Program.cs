@@ -14,6 +14,7 @@ using System.Text;
 using RustWebConsole.Web;
 using RustWebConsole.Web.Services.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using RustWebConsole.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
@@ -147,6 +148,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 
 var app = builder.Build();
+
+// Add middleware for permission checking
+app.UseMiddleware<PermissionCheckingMiddleware>();
 
 // Apply EF Core migrations automatically on startup
 using (var scope = app.Services.CreateScope())
