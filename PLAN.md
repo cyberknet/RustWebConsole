@@ -127,7 +127,7 @@ Key:
 
 ### 5. Simplified Authorization
 - 5.1 [C] Implement simple role-based authorization (Admin, User, Viewer)
-- 5.2 [ ] Create authorization handlers for server access control
+- 5.2 [C] Create authorization handlers for server access control
 - 5.3 [ ] Implement server-level access checks (user can only see their assigned servers)
 - 5.4 [ ] Add simple permission checking middleware
 

@@ -12,6 +12,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RustWebConsole.Web;
+using RustWebConsole.Web.Services.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
@@ -121,7 +123,11 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
     options.AddPolicy("ViewerOnly", policy => policy.RequireRole("Viewer"));
+    options.AddPolicy("ServerAccess", policy =>
+        policy.Requirements.Add(new ServerAccessRequirement()));
 });
+
+builder.Services.AddSingleton<IAuthorizationHandler, ServerAccessHandler>();
 
 // Add Identity services with appSettings configuration
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
