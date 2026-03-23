@@ -9,6 +9,7 @@ namespace RustWebConsole.Web.Data.Enums
         Logout, // Added Logout action type
         RefreshToken,
         ExternalLoginAttempt, // Added ExternalLoginAttempt action type
-        ExternalLoginFailure // Added ExternalLoginFailure action type
+        ExternalLoginFailure, // Added ExternalLoginFailure action type
+        ServerConfigurationChange // Added ServerConfigurationChange action type
     }
 }

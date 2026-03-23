@@ -317,6 +317,14 @@ namespace RustWebConsole.Web.Controllers
             _context.UserServers.Add(userServer);
             await _context.SaveChangesAsync();
 
+            // Log the server configuration change using UserActionLoggingService
+            await _userActionLoggingService.LogActionAsync(
+                currentUserId,
+                ActionType.ServerConfigurationChange,
+                server.Id.ToString(),
+                $"Assigned server {server.Id} to user {user.Id}."
+            );
+
             return Ok(new { Message = "Server assigned to user successfully" });
         }
 

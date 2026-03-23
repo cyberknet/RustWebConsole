@@ -177,14 +177,14 @@ Key:
 **Approach: Build on top of what exists, extend where needed!**
 
 ### 8. Server Management
-- 8.1 Create Server CRUD API endpoints
-- 8.2 Implement server connection validation
-- 8.3 Add server credential encryption at rest using **ASP.NET Core Data Protection API** (built-in)
-- 8.4 Create server status monitoring service
-- 8.5 Implement server connection testing endpoint
-- 8.6 Add server grouping/tagging functionality
-- 8.7 Log all server configuration changes to UserAction entity
-- 8.8 Persist server information to Server entity
+- 8.1 [C] Create Server CRUD API endpoints
+- 8.2 [C] Implement server connection validation
+- 8.3 [C] Add server credential encryption at rest using **ASP.NET Core Data Protection API** (built-in)
+- 8.4 [N] Create server status monitoring service
+- 8.5 [N] Implement server connection testing endpoint
+- 8.6 [C] Add server grouping/tagging functionality
+- 8.7 [C] Log all server configuration changes to UserAction entity
+- 8.8 [N] Persist server information to Server entity
 
 ### 9. Background Data Collection Service (Hosted Service)
 - 9.1 Create IHostedService for continuous data collection within main app (built-in)

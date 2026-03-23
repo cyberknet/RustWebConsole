@@ -19,18 +19,22 @@ public class AppSettings
         {"Jwt:ValidAudience",                   "RWC_JWT_VALIDAUDIENCE" },
         {"Jwt:IssuerSigningKey",                "RWC_JWT_ISSUERSIGNINGKEY" },
 
-        {"ConnectionStrings:DefaultConnection", "RWC_CONNECTIONS_DEFAULT" }
+        {"ConnectionStrings:DefaultConnection", "RWC_CONNECTIONS_DEFAULT" },
+
+        {"DataProtection:SharedKey", "RWC_DATAPROTECTION_SHAREDKEY" }
     };
     public AppSettings()
     {
         Jwt = new ();
         ConnectionStrings = new ();
         Identity = new ();
+        DataProtection = new ();
     }
 
     public Identity Identity { get; set; }
     public JwtSettings Jwt { get; private set; }
     public ConnectionStrings ConnectionStrings { get; private set; }
+    public DataProtectionSettings DataProtection { get; private set; } = new();
 }
 
 public class Identity
@@ -53,6 +57,11 @@ public class JwtSettings
 public class ConnectionStrings
 {
     public string DefaultConnection { get; set; } = string.Empty;
+}
+
+public class DataProtectionSettings
+{
+    public string KeyPath { get; set; } = "./keys";
 }
 
 public static class AppSettingsHelper

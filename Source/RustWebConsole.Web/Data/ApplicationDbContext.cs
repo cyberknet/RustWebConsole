@@ -12,10 +12,9 @@ namespace RustWebConsole.Web.Data
     {
         private readonly IEncryptionService _encryptionService;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEncryptionService encryptionService)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            _encryptionService = encryptionService;
         }
 
         public override int SaveChanges()
@@ -32,23 +31,29 @@ namespace RustWebConsole.Web.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            var encryptedConverter = new ValueConverter<string, string>(
-                    v => _encryptionService.Encrypt(v), // Encrypt on save
-                    v => _encryptionService.Decrypt(v)  // Decrypt on load
-                );
+            modelBuilder.Entity<Server>()
+                .Property(s => s.TagsSerialized)
+                .HasColumnName("Tags")
+                .HasMaxLength(500);
 
-            // loop through all entities
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                ProcessEncryptedFieldAttribute(modelBuilder, entityType, encryptedConverter);
-            }
+            // Temporarily removing encryption logic to isolate migration issue
+            // var encryptedConverter = new ValueConverter<string, string>(
+            //         v => _encryptionService.Encrypt(v), // Encrypt on save
+            //         v => _encryptionService.Decrypt(v)  // Decrypt on load
+            //     );
+
+            // // loop through all entities
+            // foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            // {
+            //     ProcessEncryptedFieldAttribute(modelBuilder, entityType, encryptedConverter);
+            // }
         }
 
         private static void ProcessEncryptedFieldAttribute(ModelBuilder modelBuilder, Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType entityType, ValueConverter<string, string> encryptedConverter)
         {
             foreach (var property in entityType.ClrType.GetProperties())
             {
-                if (Attribute.GetCustomAttribute(property, typeof(EncryptedFieldAttribute)) is EncryptedFieldAttribute)
+                if (Attribute.GetCustomAttribute(property, typeof(EncryptedFieldAttribute)) is EncryptedFieldAttribute && property.Name != "TagsSerialized")
                 {
                     modelBuilder.Entity(entityType.ClrType)
                         .Property(property.Name)
@@ -67,5 +72,6 @@ namespace RustWebConsole.Web.Data
         public DbSet<RconResponse> RconResponses { get; set; } = null!;
         public DbSet<UserAction> UserActions { get; set; } = null!;
         public DbSet<PlayerInventory> PlayerInventories { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; } = null!;
     }
 }
