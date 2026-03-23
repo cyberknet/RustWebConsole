@@ -42,6 +42,9 @@ x86/
 # Node.js
 node_modules/
 
+# AppSettings.[environment].json
+AppSettings.*.json
+
 # Others
 *.log
 *.tlog

@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.WebUtilities;
+using RustWebConsole.Web.Data;
+using RustWebConsole.Web.Data.Enums; // Added namespace for ActionType
+using RustWebConsole.Web.Services; // Added namespace for UserActionLoggingService
 
 namespace RustWebConsole.Web.Controllers
 {
@@ -20,13 +23,19 @@ namespace RustWebConsole.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context;
+        private readonly AppSettings _appSettings;
         private static readonly Dictionary<string, string> RefreshTokens = new(); // In-memory storage for simplicity
+        private readonly UserActionLoggingService _userActionLoggingService; // Added UserActionLoggingService
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, ApplicationDbContext context, AppSettings appSettings, UserActionLoggingService userActionLoggingService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _context = context;
+            _appSettings = appSettings;
+            _userActionLoggingService = userActionLoggingService; // Initialized UserActionLoggingService
         }
 
         [HttpPost("register")]
@@ -54,6 +63,9 @@ namespace RustWebConsole.Web.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Log user registration action
+            await _userActionLoggingService.LogActionAsync(user.Id, ActionType.Register, "Self", "User registered successfully.");
+
             return Ok(new { Message = "User registered successfully" });
         }
 
@@ -75,6 +87,9 @@ namespace RustWebConsole.Web.Controllers
             var refreshToken = GenerateRefreshToken();
 
             RefreshTokens[token] = refreshToken; // Store the refresh token
+
+            // Log user login action
+            await _userActionLoggingService.LogActionAsync(user.Id, ActionType.Login, "Self", "User logged in successfully.");
 
             return Ok(new { Token = token, RefreshToken = refreshToken });
         }
@@ -106,6 +121,17 @@ namespace RustWebConsole.Web.Controllers
             var newRefreshToken = GenerateRefreshToken();
 
             RefreshTokens[newToken] = newRefreshToken;
+
+            // Log refresh token action
+            _context.UserActions.Add(new UserAction
+            {
+                UserId = user.Id,
+                ActionType = ActionType.RefreshToken,
+                Target = "Self",
+                Timestamp = DateTime.UtcNow,
+                Details = "User refreshed token successfully."
+            });
+            _context.SaveChanges();
 
             return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
         }
@@ -162,6 +188,153 @@ namespace RustWebConsole.Web.Controllers
             return Ok(new { Message = "Password has been reset successfully." });
         }
 
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                user.UserName,
+                user.Email,
+                user.DisplayName
+            });
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.DisplayName = request.DisplayName;
+            user.Email = request.Email;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("add-user")]
+        public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = request.UserName,
+                Email = request.Email,
+                DisplayName = request.DisplayName
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+
+            return Ok(new { Message = "User added successfully" });
+        }
+
+        [HttpPost("assign-server")]
+        public async Task<IActionResult> AssignServer([FromBody] AssignServerRequest request)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return Unauthorized(new { Message = "User is not authenticated" });
+            }
+
+            var currentUser = await _userManager.FindByIdAsync(currentUserId);
+            if (currentUser == null)
+            {
+                return Unauthorized(new { Message = "User not found" });
+            }
+
+            var server = await _context.Servers.FindAsync(request.ServerId);
+            if (server == null)
+            {
+                return NotFound(new { Message = "Server not found" });
+            }
+
+            // Check if the current user is an admin or the owner of the server
+            var isAdmin = User.IsInRole("Admin");
+            var isServerOwner = server.UserServers.Any(us => us.UserId == currentUserId);
+
+            if (!isAdmin && !isServerOwner)
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+
+            var userServer = new UserServer
+            {
+                UserId = user.Id,
+                ServerId = server.Id
+            };
+
+            _context.UserServers.Add(userServer);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Server assigned to user successfully" });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "User not logged in." });
+            }
+
+            // Log user logout action
+            _userActionLoggingService.LogActionAsync(userId, ActionType.Logout, "Self", "User logged out successfully.").Wait();
+
+            return Ok(new { Message = "User logged out successfully." });
+        }
+
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -179,12 +352,12 @@ namespace RustWebConsole.Web.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Jwt.IssuerSigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _appSettings.Jwt.ValidIssuer,
+                audience: _appSettings.Jwt.ValidAudience,
                 claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
