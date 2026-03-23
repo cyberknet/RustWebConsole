@@ -129,6 +129,9 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(appSettings.DataProtection.KeyPath))
     .SetApplicationName("RustWebConsole");
 
+// Register the ServerStatusMonitoringService
+builder.Services.AddHostedService<ServerStatusMonitoringService>();
+
 var app = builder.Build();
 
 // Add middleware for permission checking

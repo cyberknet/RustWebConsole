@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Docs/">
+    <File Path=".github/copilot-instructions.md" />
     <File Path="EXISTING_RCON_LIBRARY.md" />
     <File Path="LICENSE" />
     <File Path="PLAN.md" />
