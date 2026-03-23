@@ -49,4 +49,8 @@
     <Using Include="System.Text" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RustRcon\RustRcon.csproj" />
+  </ItemGroup>
+
 </Project>

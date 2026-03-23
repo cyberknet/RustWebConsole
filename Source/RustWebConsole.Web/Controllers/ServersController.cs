@@ -5,6 +5,7 @@ using RustWebConsole.Web.Data;
 using RustWebConsole.Web.Data.Entities;
 using RustWebConsole.Web.Data.Enums;
 using RustWebConsole.Web.Services.Authorization;
+using RustWebConsole.Web.Services.Validation;
 using System.Security.Claims;
 
 namespace RustWebConsole.Web.Controllers
@@ -15,11 +16,13 @@ namespace RustWebConsole.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ServerConnectionValidator _connectionValidator;
 
-        public ServersController(ApplicationDbContext context, IAuthorizationService authorizationService)
+        public ServersController(ApplicationDbContext context, IAuthorizationService authorizationService, ServerConnectionValidator connectionValidator)
         {
             _context = context;
             _authorizationService = authorizationService;
+            _connectionValidator = connectionValidator;
         }
 
         [HttpGet]
@@ -132,6 +135,26 @@ namespace RustWebConsole.Web.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/validate-connection")]
+        public async Task<IActionResult> ValidateServerConnection(int id)
+        {
+            var server = await _context.Servers.FindAsync(id);
+
+            if (server == null)
+            {
+                return NotFound();
+            }
+
+            var isValid = await _connectionValidator.ValidateConnectionAsync(server.Hostname, server.Port, server.Password);
+
+            if (!isValid)
+            {
+                return BadRequest("Unable to connect to the server with the provided credentials.");
+            }
+
+            return Ok("Connection successful.");
         }
 
         private bool ServerExists(int id)
