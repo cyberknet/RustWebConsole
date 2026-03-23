@@ -177,7 +177,7 @@ Key:
 **Approach: Build on top of what exists, extend where needed!**
 
 ### 8. Server Management
-- 8.1 Create Server CRUD API endpoints
+- 8.1 [C] Create Server CRUD API endpoints
 - 8.2 Implement server connection validation
 - 8.3 Add server credential encryption at rest using **ASP.NET Core Data Protection API** (built-in)
 - 8.4 Create server status monitoring service
