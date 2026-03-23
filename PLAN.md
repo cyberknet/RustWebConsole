@@ -28,6 +28,7 @@ Key:
 [C] = Complete
 [I] = In Progress
 [D] = Deferred Until Later
+[N] = No Longer Needed
 [ ] = Not Started
 
 ## Phase 1: Foundation & Infrastructure
@@ -134,7 +135,7 @@ Key:
 ### 6. User Management
 - 6.1 [C] Create user profile endpoints (GET, PUT)
 - 6.2 [C] Create simple user management for admins (add user, assign servers)
-- 6.3 [ ] Implement user-server access assignment endpoints
+- 6.3 [N] Implement user-server access assignment endpoints
 - 6.4 [ ] Add basic user activity logging
 
 ---
