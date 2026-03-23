@@ -16,6 +16,7 @@ using RustWebConsole.Web.Services.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using RustWebConsole.Web.Middleware;
 using RustWebConsole.Web.Services; // Added namespace for UserActionLoggingService
+using Microsoft.AspNetCore.DataProtection; // Added for Data Protection
 
 var builder = WebApplication.CreateBuilder(args);
 Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
@@ -63,32 +64,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-T GetConfigValue<T>(IConfiguration configuration, PasswordOptions? passwordOptions, string propertyName, string envVar, T defaultValue) where T : struct
-{
-    var envValue = Environment.GetEnvironmentVariable(envVar);
-    if (!string.IsNullOrEmpty(envValue))
-    {
-        if (typeof(T) == typeof(bool) && bool.TryParse(envValue, out var boolResult))
-            return (T)(object)boolResult;
 
-        if (typeof(T) == typeof(int) && int.TryParse(envValue, out var intResult))
-            return (T)(object)intResult;
-    }
-    // no environment variable, try to get from JSON configuration
-    else if (passwordOptions != null)
-    {
-        // use reflection to load the property value from the passwordOptions object
-        var propertyInfo = typeof(PasswordOptions).GetProperty(propertyName);
-        if (propertyInfo != null)
-        {
-            var jsonValue = propertyInfo.GetValue(passwordOptions);
-            if (jsonValue != null && jsonValue is T value)
-                return value;
-        }
-    }
-    
-    return defaultValue;
-}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -148,6 +124,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUserActionLoggingService, UserActionLoggingService>();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(appSettings.DataProtection.KeyPath))
+    .SetApplicationName("RustWebConsole");
 
 var app = builder.Build();
 

@@ -37,6 +37,7 @@ allows multiple users to monitor and manage one or more Rust servers through a w
    | RWC_JWT_VALIDAUDIENCE                       | The audience for the JWT tokens (e.g., https://yourdomain.com).           |
    | RWC_JWT_ISSUERSIGNINGKEY                    | A secret key used to sign the JWT tokens.                                 |
    | RWC_CONNECTIONS_DEFAULT                     | The connection string for the default database.                           |
+   | RWC_DATAPROTECTION_KEYPATH                  | Path to the key repository for Data Protection API.                       |
 
    Alternatively, you can map a configuration file to appsettings.json in your deployment environment. Below is an example file to get you started:
 
@@ -57,6 +58,9 @@ allows multiple users to monitor and manage one or more Rust servers through a w
        "ValidIssuer": "https://yourdomain.com",
        "ValidAudience": "https://yourdomain.com",
        "IssuerSigningKey": "YourSuperSecretKey"
+     },
+     "DataProtection": {
+       "KeyPath": "/app/keys"
      }
    }
    ```
@@ -84,6 +88,9 @@ The `appsettings.json` file contains configuration values for the application. B
 - **PasswordRequireLowercase**: Whether passwords must contain a lowercase letter.
 - **RequireConfirmedAccount**: Whether users must confirm their accounts.
 
+#### DataProtection
+- **KeyPath**: Path to the key repository for Data Protection API. This should be a directory that the application has read/write access to.
+
 ### Environment Variable Overrides
 For deployments using Docker, you can override the `appsettings.json` values using environment variables. The following environment variables are supported:
 
@@ -99,6 +106,7 @@ For deployments using Docker, you can override the `appsettings.json` values usi
 | Jwt:ValidAudience                      | RWC_JWT_VALIDAUDIENCE                       |
 | Jwt:IssuerSigningKey                   | RWC_JWT_ISSUERSIGNINGKEY                    |
 | ConnectionStrings:DefaultConnection    | RWC_CONNECTIONS_DEFAULT                     |
+| DataProtection:KeyPath                 | RWC_DATAPROTECTION_KEYPATH                  |
 
 These environment variables are mapped in the `AppSettings.EnvironmentMap` dictionary in `AppSettings.cs`. Ensure these variables are set in your Docker environment to override the default values.
 
