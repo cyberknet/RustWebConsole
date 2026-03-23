@@ -136,7 +136,7 @@ Key:
 - 6.1 [C] Create user profile endpoints (GET, PUT)
 - 6.2 [C] Create simple user management for admins (add user, assign servers)
 - 6.3 [N] Implement user-server access assignment endpoints
-- 6.4 [ ] Add basic user activity logging
+- 6.4 [C] Add basic user activity logging
 
 ---
 

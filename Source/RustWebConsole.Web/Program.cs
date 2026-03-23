@@ -15,6 +15,7 @@ using RustWebConsole.Web;
 using RustWebConsole.Web.Services.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using RustWebConsole.Web.Middleware;
+using RustWebConsole.Web.Services; // Added namespace for UserActionLoggingService
 
 var builder = WebApplication.CreateBuilder(args);
 Dictionary<string, string?> overrides = AppSettings.EnvironmentMap.ToDictionary(
@@ -146,6 +147,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IUserActionLoggingService, UserActionLoggingService>();
 
 var app = builder.Build();
 

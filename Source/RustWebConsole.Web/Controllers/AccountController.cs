@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.WebUtilities;
 using RustWebConsole.Web.Data;
+using RustWebConsole.Web.Data.Enums; // Added namespace for ActionType
+using RustWebConsole.Web.Services; // Added namespace for UserActionLoggingService
 
 namespace RustWebConsole.Web.Controllers
 {
@@ -24,14 +26,16 @@ namespace RustWebConsole.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly AppSettings _appSettings;
         private static readonly Dictionary<string, string> RefreshTokens = new(); // In-memory storage for simplicity
+        private readonly UserActionLoggingService _userActionLoggingService; // Added UserActionLoggingService
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, ApplicationDbContext context, AppSettings appSettings)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, ApplicationDbContext context, AppSettings appSettings, UserActionLoggingService userActionLoggingService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _context = context;
             _appSettings = appSettings;
+            _userActionLoggingService = userActionLoggingService; // Initialized UserActionLoggingService
         }
 
         [HttpPost("register")]
@@ -59,6 +63,9 @@ namespace RustWebConsole.Web.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Log user registration action
+            await _userActionLoggingService.LogActionAsync(user.Id, ActionType.Register, "Self", "User registered successfully.");
+
             return Ok(new { Message = "User registered successfully" });
         }
 
@@ -80,6 +87,9 @@ namespace RustWebConsole.Web.Controllers
             var refreshToken = GenerateRefreshToken();
 
             RefreshTokens[token] = refreshToken; // Store the refresh token
+
+            // Log user login action
+            await _userActionLoggingService.LogActionAsync(user.Id, ActionType.Login, "Self", "User logged in successfully.");
 
             return Ok(new { Token = token, RefreshToken = refreshToken });
         }
@@ -111,6 +121,17 @@ namespace RustWebConsole.Web.Controllers
             var newRefreshToken = GenerateRefreshToken();
 
             RefreshTokens[newToken] = newRefreshToken;
+
+            // Log refresh token action
+            _context.UserActions.Add(new UserAction
+            {
+                UserId = user.Id,
+                ActionType = ActionType.RefreshToken,
+                Target = "Self",
+                Timestamp = DateTime.UtcNow,
+                Details = "User refreshed token successfully."
+            });
+            _context.SaveChanges();
 
             return Ok(new { Token = newToken, RefreshToken = newRefreshToken });
         }
@@ -297,6 +318,21 @@ namespace RustWebConsole.Web.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "Server assigned to user successfully" });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "User not logged in." });
+            }
+
+            // Log user logout action
+            _userActionLoggingService.LogActionAsync(userId, ActionType.Logout, "Self", "User logged out successfully.").Wait();
+
+            return Ok(new { Message = "User logged out successfully." });
         }
 
         private string GenerateRefreshToken()

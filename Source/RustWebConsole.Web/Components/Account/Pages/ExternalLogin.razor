@@ -8,6 +8,8 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using RustWebConsole.Web.Data
 @using RustWebConsole.Web.Data.Entities
+@using RustWebConsole.Web.Data.Enums
+@using RustWebConsole.Web.Services // Added namespace for IUserActionLoggingService
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -16,6 +18,9 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
+@inject ApplicationDbContext _context
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserActionLoggingService UserActionLoggingService
 
 <PageTitle>Register</PageTitle>
 
@@ -207,6 +212,38 @@
             throw new NotSupportedException("The default UI requires a user store with email support.");
         }
         return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
+    private async Task OnExternalLoginAttempt(string provider)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Log external login attempt
+            await UserActionLoggingService.LogActionAsync(user.Identity?.Name ?? "Anonymous", RustWebConsole.Web.Data.Enums.ActionType.ExternalLoginAttempt, provider, "User attempted external login.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logging failed: {ex.Message}");
+        }
+    }
+
+    private async Task OnExternalLoginFailure(string provider, string reason)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Log external login failure
+            await UserActionLoggingService.LogActionAsync(user.Identity?.Name ?? "Anonymous", RustWebConsole.Web.Data.Enums.ActionType.ExternalLoginFailure, provider, $"External login failed: {reason}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logging failed: {ex.Message}");
+        }
     }
 
     private sealed class InputModel
