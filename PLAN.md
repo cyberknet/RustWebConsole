@@ -144,20 +144,20 @@ Key:
 
 ### 7. WebSocket RCON Implementation
 **🎯 EXTEND YOUR EXISTING LIBRARY**: Use and enhance **RustRcon** 
-- 7.1 [ ] Reference **RustRcon** project (already in solution)
-- 7.2 [ ] Review existing **RustWebRconClient** class and understand what's implemented
-- 7.3 [ ] Use existing entities and events where available
-- 7.4 [ ] **Identify missing features** needed for your requirements:
-  - 7.4.1 [ ] Player inventory retrieval and manipulation
-  - 7.4.2 [ ] Player teleportation commands
-  - 7.4.3 [ ] Advanced server statistics
-  - 7.4.4 [ ] Any other missing RCON commands
-- 7.5 [ ] **Extend RustWebRconClient or create wrapper** for missing functionality
-- 7.6 [ ] Add new parsers for commands not yet supported
-- 7.7 [ ] Add retry logic using **Polly** around connection attempts
-- 7.8 [ ] Log all RCON requests to RconRequest entity
-- 7.9 [ ] Log all RCON responses to RconResponse entity
-- 7.10 [ ] Implement request/response correlation tracking
+- 7.1 [C] Reference **RustRcon** project (already in solution)
+- 7.2 [C] Review existing **RustWebRconClient** class and understand what's implemented
+- 7.3 [C] Use existing entities and events where available
+- 7.4 [D] **Identify missing features** needed for your requirements:
+  - 7.4.1 [D] Player inventory retrieval and manipulation
+  - 7.4.2 [D] Player teleportation commands
+  - 7.4.3 [D] Advanced server statistics
+  - 7.4.4 [D] Any other missing RCON commands
+- 7.5 [D] **Extend RustWebRconClient or create wrapper** for missing functionality
+- 7.6 [D] Add new parsers for commands not yet supported
+- 7.7 [C] Add retry logic using **Polly** around connection attempts
+- 7.8 [D] Log all RCON requests to RconRequest entity (on the Blazor side, not on the library side)
+- 7.9 [D] Log all RCON responses to RconResponse entity (on the Blazor side, not on the library side)
+- 7.10 [D] Implement request/response correlation tracking (on the Blazor side, not on the library side)
 
 **Your existing library provides (as a foundation):**
 - ✅ WebSocket connection management (Websocket.Client)

@@ -4,6 +4,8 @@ using RustRcon.Entities;
 using RustRcon.EventArgs;
 using RustRcon.Messages;
 using RustRcon.Parsers;
+using Polly;
+using Polly.Retry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,12 +68,26 @@ namespace RustRcon
 
             var uri = new Uri($"ws://{hostname}:{port}/{password}");
 
-            _socket = new WebsocketClient(uri);
+            // Define a retry policy using Polly
+            RetryPolicy retryPolicy = Policy
+                .Handle<WebSocketException>()
+                .Or<Exception>()
+                .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        Console.WriteLine($"Retry {retryCount} encountered an error: {exception.Message}. Waiting {timeSpan} before next retry.");
+                    });
 
-            _socket.MessageReceived.Subscribe((message) => Socket_OnMessage(message));
-            _socket.DisconnectionHappened.Subscribe((info) => Socket_OnClose(info));
+            // Execute the connection logic with the retry policy
+            retryPolicy.Execute(() =>
+            {
+                _socket = new WebsocketClient(uri);
 
-            InitializeParsers();
+                _socket.MessageReceived.Subscribe((message) => Socket_OnMessage(message));
+                _socket.DisconnectionHappened.Subscribe((info) => Socket_OnClose(info));
+
+                InitializeParsers();
+            });
         }
         #endregion
 
