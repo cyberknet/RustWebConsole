@@ -183,8 +183,8 @@ Key:
 - 8.4 [N] Create server status monitoring service
 - 8.5 [N] Implement server connection testing endpoint
 - 8.6 [C] Add server grouping/tagging functionality
-- 8.7 Log all server configuration changes to UserAction entity
-- 8.8 Persist server information to Server entity
+- 8.7 [C] Log all server configuration changes to UserAction entity
+- 8.8 [N] Persist server information to Server entity
 
 ### 9. Background Data Collection Service (Hosted Service)
 - 9.1 Create IHostedService for continuous data collection within main app (built-in)
