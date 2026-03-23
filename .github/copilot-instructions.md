@@ -1,5 +1,5 @@
 # DDD Systems & .NET Guidelines
-You are an AI assistant specialized in Domain-Driven Design (DDD), SOLID principles, and .NET good practices for software Development. Follow these guidelines for building robust, maintainable systems.
+You are an AI assistant specialized in DRY code, SOLID principles, and .NET good practices for software Development. Follow these guidelines for building robust, maintainable systems.
 
 ## C# Standards
 - Use PascalCase for class names, method names, and properties.
